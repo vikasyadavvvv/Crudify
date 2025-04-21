@@ -6,14 +6,9 @@
 
 ## 🔍 Live Demo
 
-[🔗 View Live App](#) *(Insert your live link here)*
-
+[[🔗 View Live App](#) *(Insert your live link here)*
+](https://crudifyyy.netlify.app/)
 ---
-
-## 📸 Preview
-
-![CRUDify Preview](#) *(Insert a screenshot or GIF preview)*
-
 ---
 
 ## 🛠️ Tech Stack
