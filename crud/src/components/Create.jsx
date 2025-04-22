@@ -64,7 +64,7 @@ const Create = () => {
 
   return (
     <div className="bg-white max-w-md mx-auto mt-10 p-8 rounded-lg shadow-lg">
-      <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+      <h2 className="text-3xl font-bold text-center text-blue-800 00 mb-6">
         Create a New Post
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -156,7 +156,7 @@ const Create = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-blue-400 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out flex items-center"
+            className="bg-blue-800 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-500 transition duration-300 ease-in-out flex items-center"
           >
             {isSubmitting ? (
               <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

@@ -5,6 +5,9 @@ import CustomModal from './CustomModal';
 import { Link } from 'react-router-dom';
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import Papa from "papaparse"; // <-- import this at the top
+
+
 
 
 export default function Read() {
@@ -35,17 +38,32 @@ export default function Read() {
     }
   };
 
-  const handleExport = () => {
-    // Convert user data into a worksheet
-    const worksheet = XLSX.utils.json_to_sheet(filteredUsers);
+  
+
+
+const handleExport = (type) => {
+  const exportData = filteredUsers.map(user => ({
+    Name: user.name,
+    Email: user.email,
+    Gender: user.gender,
+    Age: user.age,
+  }));
+
+  if (type === 'xlsx') {
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
-  
-    // Export to Excel
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(data, "UserData.xlsx");
-  };
+  } else if (type === 'csv') {
+    // Using PapaParse to convert JSON to CSV
+    const csv = Papa.unparse(exportData);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'UserData.csv');
+  }
+};
+
   
 
   // Filter users based on searchData and gender
@@ -112,55 +130,97 @@ export default function Read() {
       ))}
     </div>
 
-    <div className="mb-4 flex justify-end">
+    {/* Export Buttons */}
+<div className="mb-4 flex justify-end gap-4">
   <button
-    onClick={handleExport}
-    className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+    onClick={() => handleExport('xlsx')}
+    className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-400 transition"
   >
     Export to Excel
+  </button>
+  <button
+    onClick={() => handleExport('csv')}
+    className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-400 transition"
+  >
+    Export to CSV
   </button>
 </div>
 
 
-    {/* User Cards */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {filteredUsers.length > 0 ? (
-        filteredUsers.map((user) => (
-          <div
-            key={user.id}
-            className="bg-white border border-gray-200 shadow-md rounded-lg p-5 transition hover:shadow-lg"
-          >
+
+{/* User Cards */}
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+  {filteredUsers.length > 0 ? (
+    filteredUsers.map((user) => {
+      // Function to generate a color based on the first letter of the name
+      const generateColor = (name) => {
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const index = letters.indexOf(name.charAt(0).toUpperCase());
+        const colorCodes = [
+          'bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 
+          'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-teal-500', 
+          'bg-orange-500', 'bg-lime-500'
+        ];
+        return colorCodes[index % colorCodes.length]; // Cycling through colors
+      };
+
+      return (
+        <div
+          key={user.id}
+          className="bg-white border border-gray-200 shadow-md rounded-lg p-5 transition hover:shadow-lg"
+        >
+          {/* Avatar with Logo on Top and Dynamic Color */}
+          <div className="flex justify-center mb-4">
+            <div className={`w-16 h-16 flex items-center justify-center ${generateColor(user.name)} text-white text-3xl font-bold rounded-full`}>
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+          </div>
+
+          <div>
             <h3 className="text-lg font-semibold text-gray-800">{user.name}</h3>
             <p className="text-sm text-gray-600 mt-1"><span className="font-medium">Email:</span> {user.email}</p>
             <p className="text-sm text-gray-600"><span className="font-medium">Gender:</span> {user.gender}</p>
+          </div>
 
-            <div className="flex justify-between items-center mt-4 text-sm">
+          <div className="flex justify-between items-center mt-4 text-sm gap-4">
+            <div className="flex items-center space-x-4">
+              {/* View Icon and Text */}
               <button
                 onClick={() => handleView(user)}
-                className="text-blue-600 hover:underline font-medium"
+                className="text-blue-500 hover:text-blue-600 flex items-center space-x-2 transition duration-200"
               >
-                View
+                <i className="fas fa-eye"></i>
+                <span className="hidden sm:inline">View</span>
               </button>
+
+              {/* Edit Icon and Text */}
               <Link
                 to={`/edit/${user.id}`}
-                className="text-green-600 hover:underline font-medium"
+                className="text-green-500 hover:text-green-600 flex items-center space-x-2 transition duration-200"
               >
-                Edit
+                <i className="fas fa-edit"></i>
+                <span className="hidden sm:inline">Edit</span>
               </Link>
+
+              {/* Delete Icon and Text */}
               <button
                 onClick={() => handleDelete(user.id)}
-                className="text-red-600 hover:underline font-medium"
+                className="text-red-500 hover:text-red-600 flex items-center space-x-2 transition duration-200"
               >
-                Delete
+                <i className="fas fa-trash-alt"></i>
+                <span className="hidden sm:inline">Delete</span>
               </button>
             </div>
           </div>
-        ))
-      ) : (
-        <p className="text-gray-600 col-span-full text-center">No users found.</p>
-      )}
-    </div>
-  </div>
+        </div>
+      );
+    })
+  ) : (
+    <p className="text-gray-600 col-span-full text-center">No users found.</p>
+  )}
+</div>
+
+ </div>
 </>
   );
 }
