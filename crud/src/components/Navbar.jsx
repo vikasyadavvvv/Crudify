@@ -64,6 +64,7 @@ const Navbar = () => {
               All Posts ({allusers.length})
             </Link>
           </li>
+        
         </ul>
       </div>
 

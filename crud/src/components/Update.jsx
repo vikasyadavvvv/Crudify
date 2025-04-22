@@ -35,8 +35,14 @@ const Update = () => {
     });
   };
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="w-12 h-12 border-4 border-blue-400 border-dashed rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+ 
   return (
     <div className="min-h-screen bg-gradient-to-br flex items-center justify-center px-4">
     <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">

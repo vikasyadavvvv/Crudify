@@ -3,6 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { showUser, deleteUser } from '../features/userDetailSlice';
 import CustomModal from './CustomModal';
 import { Link } from 'react-router-dom';
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 
 export default function Read() {
   const dispatch = useDispatch();
@@ -32,6 +35,19 @@ export default function Read() {
     }
   };
 
+  const handleExport = () => {
+    // Convert user data into a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(filteredUsers);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+  
+    // Export to Excel
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "UserData.xlsx");
+  };
+  
+
   // Filter users based on searchData and gender
   const filteredUsers = users
     .filter((user) =>
@@ -42,8 +58,16 @@ export default function Read() {
       return user.gender.toLowerCase() === genderFilter;
     });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center h-64">
+          <div className="w-12 h-12 border-4 border-blue-400 border-dashed rounded-full animate-spin"></div>
+        </div>
+      );
+    }
+      if (error) return <p>Error: {error}</p>;
+
+
 
   return (
     <>
@@ -87,6 +111,16 @@ export default function Read() {
         </label>
       ))}
     </div>
+
+    <div className="mb-4 flex justify-end">
+  <button
+    onClick={handleExport}
+    className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+  >
+    Export to Excel
+  </button>
+</div>
+
 
     {/* User Cards */}
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
